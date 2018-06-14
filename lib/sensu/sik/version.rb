@@ -1,0 +1,5 @@
+module Sensu
+  module SIK
+    VERSION = "0.1.0"
+  end
+end
