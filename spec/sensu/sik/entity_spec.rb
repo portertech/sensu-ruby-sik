@@ -1,6 +1,6 @@
 require "sensu/sik/entity"
 
-RSpec.describe Sensu::SIK::Client do
+RSpec.describe Sensu::SIK::Entity do
   before do
     client = Sensu::SIK::Client.new
     @entity = Sensu::SIK::Entity.new(client)
