@@ -3,7 +3,12 @@
 Worst name or the greatest?
 
 Instrument your application with this neat library to send metric and
-incident data through the Sensu Event Pipeline.
+incident data through the Sensu Event Pipeline. This library provides
+a Sensu Backend API client and Ruby classes to create and manage Sensu
+resources (e.g. Entity, Event, etc.). This library also includes a
+StatsD client, providing a lightweight way to track and measure
+metrics in your application. The StatsD client requires a local Sensu
+2.x Agent (sensu-agent) to capture the StatsD produced metrics.
 
 ## Installation
 
@@ -23,7 +28,7 @@ Or install it yourself as:
 
 ## Usage
 
-Require the library and configure the client.
+Require the library and configure the Sensu Backend API client.
 
 ```ruby
 require "sensu/sik"
@@ -35,7 +40,7 @@ require "sensu/sik"
 )
 ```
 
-Create and update a Sensu Entity for the application.
+Create and update a Sensu Entity to represent the application.
 
 ```ruby
 entity = Sensu::SIK::Entity.new(@client, id: "store-app")
@@ -72,7 +77,7 @@ event = Sensu::SIK::Event.new(@client, entity: entity, metrics: metrics)
 event.save!
 ```
 
-Create a Sensu Check to represent an internal error.
+Create a Sensu Check to represent an internal application error.
 
 ```ruby
 check = Sensu::SIK::Check.new(@client, name: "postgresql_connection")
@@ -90,6 +95,28 @@ Check. Send the Event through the Sensu Event Pipeline!
 event = Sensu::SIK::Event.new(@client, entity: entity, check: check)
 
 event.save!
+```
+
+Use the StatsD client!
+
+```ruby
+# You can pass a key and a ms value
+Sensu::SIK::StatsD.measure("PostgreSQL.insert", 2.55)
+
+# Or more commonly pass a block that calls your code
+Sensu::SIK::StatsD.measure("PostgreSQL.insert") do
+  pg.exec("INSERT INTO Orders VALUES(1,'Towel',42)")
+end
+
+StatsD.increment("orders", tags: ["env:production", "product:towels"])
+```
+
+Enable a Ruby Class for instrumentation by extending it.
+
+```ruby
+ShoppingCart.extend Sensu::SIK::StatsD::Instrument
+
+ShoppingCart.statsd_count :ordered, "orders"
 ```
 
 ## Development
