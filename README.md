@@ -46,7 +46,7 @@ entity.save!
 Create Sensu Metrics.
 
 ```ruby
-metrics = Sensu::SIK::Metrics.new(handlers: ["influxdb", "timescaledb"])
+metrics = Sensu::SIK::Metrics.new(handlers: ["timescaledb"])
 
 point = {
   name: "orders",
@@ -72,6 +72,26 @@ event = Sensu::SIK::Event.new(@client, entity: entity, metrics: metrics)
 event.save!
 ```
 
+Create a Sensu Check to represent an internal error.
+
+```ruby
+check = Sensu::SIK::Check.new(@client, name: "postgresql_connection")
+
+check[:output] = "Unable to connect to PostgreSQL - localhost 5432"
+check[:status] = 2
+
+check[:handlers] = ["slack", "pagerduty"]
+```
+
+Create an Event containing the application's Entity and the Sensu
+Check. Send the Event through the Sensu Event Pipeline!
+
+```ruby
+event = Sensu::SIK::Event.new(@client, entity: entity, check: check)
+
+event.save!
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies.
@@ -83,6 +103,12 @@ install`. To release a new version, update the version number in
 `version.rb`, and then run `bundle exec rake release`, which will
 create a git tag for the version, push git commits and tags, and push
 the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Testing
+
+The specs currently do not mock the Sensu Backend API and require a
+local, fresh, running sensu-backend service. This is intentional, to
+help QA the API. Webmock will eventually be used.
 
 ## Contributing
 
