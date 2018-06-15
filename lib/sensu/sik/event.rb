@@ -16,7 +16,11 @@ module Sensu
       end
 
       def []=(key, value)
-        @event[key] = value
+        if value.respond_to?(:to_hash)
+          @event[key] = value.to_hash
+        else
+          @event[key] = value
+        end
       end
 
       def to_hash
@@ -35,12 +39,20 @@ module Sensu
       private
 
       def create_event_hash(options)
-        {
+        event = {
           :timestamp => options.fetch(:timestamp, Time.now.to_i),
           :entity => options[:entity],
           :check => options[:check],
           :metrics => options[:metrics]
-        }.reject { |key, value| value.nil? }
+        }
+        event.each do |key, value|
+          if value.nil?
+            event.delete(key)
+          elsif value.respond_to?(:to_hash)
+            event[key] = value.to_hash
+          end
+        end
+        event
       end
     end
   end

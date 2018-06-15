@@ -15,12 +15,13 @@ RSpec.describe Sensu::SIK::Event do
   end
 
   it "can be saved" do
-    @event[:entity] = @entity.to_hash
-    @event[:metrics] = @metrics.to_hash
-#    response = @event.save!
-#    expect(response.code).to eq("200")
-#    expect(response.body).to be_kind_of(String)
-    @event[:check] = @check.to_hash
+    @event[:entity] = @entity
+    @event[:metrics] = @metrics
+    # POST /events still requires a check :(
+    # response = @event.save!
+    # expect(response.code).to eq("200")
+    # expect(response.body).to be_kind_of(String)
+    @event[:check] = @check
     response = @event.save!
     expect(response.code).to eq("200")
     expect(response.body).to be_kind_of(String)
