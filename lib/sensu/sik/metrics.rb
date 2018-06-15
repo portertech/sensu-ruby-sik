@@ -27,7 +27,7 @@ module Sensu
       def create_metrics_hash(options)
         handlers = options.fetch(:handlers, [])
         points = options.fetch(:points, [])
-        metrics = {
+        {
           :handlers => handlers,
           :points => points
         }

@@ -32,7 +32,7 @@ module Sensu
         interval = options.fetch(:interval, 60)
         organization = options.fetch(:organization, "default")
         environment = options.fetch(:environment, "default")
-        check = {
+        {
           :name => name,
           :interval => interval,
           :organization => organization,

@@ -33,7 +33,7 @@ module Sensu
         klass = options.fetch(:class, "application")
         organization = options.fetch(:organization, "default")
         environment = options.fetch(:environment, "default")
-        entity = {
+        {
           :id => id,
           :class => klass,
           :organization => organization,
